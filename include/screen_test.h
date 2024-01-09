@@ -13,4 +13,8 @@ void draw_hdmi_screen_rgb(uint8_t *data, uint32_t dataSize);
 
 void draw_hdmi_screen_rgb_quarter(uint8_t *data, uint32_t dataSize, uint8_t quarter);
 
+void draw_hdmi_screen_rgb_nine(uint8_t *data, uint32_t dataSize, uint8_t part);
+
+void draw_hdmi_screen_rgb_dynamic(uint8_t *data, uint32_t dataSize, uint8_t screenNum, uint8_t rows, uint8_t cols);
+
 #endif

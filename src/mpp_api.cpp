@@ -28,8 +28,8 @@
 extern bool playing;
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
-#define COL_WINDOW_NUMBER 3
-#define ROW_WINDOW_NUMBER 3
+#define COL_WINDOW_NUMBER 4
+#define ROW_WINDOW_NUMBER 4
 
 void get_window_info(int processId, int *start_x, int *start_y, int *window_width, int *window_height)
 {
@@ -106,8 +106,8 @@ void mpp_decoder_frame_callback(void *userdata, int width_stride, int height_str
     int srcFormat = RK_FORMAT_YCbCr_420_SP;
     int dstFormat = RK_FORMAT_BGRA_8888;
 
-    int dstHeight = height / 2;
-    int dstWidth = width / 2;
+    int dstHeight = height / ROW_WINDOW_NUMBER;
+    int dstWidth = width / COL_WINDOW_NUMBER;
     int srcBufSize = width_stride * height_stride * get_bpp_from_format(srcFormat);
     int dstBufSize = dstHeight * dstWidth * get_bpp_from_format(dstFormat);
 
@@ -187,6 +187,14 @@ void mpp_decoder_frame_callback(void *userdata, int width_stride, int height_str
             printf("Spent: %ld ms\n", timeSpent);
         }
         // printf("Spent:%ld ms\n", end.tv_sec * 1000 + end.tv_usec / 1000 - now.tv_usec / 1000 - now.tv_sec * 1000);
+    }
+
+    if (ctx->processId < 16)
+    {
+        // 4x4屏幕
+        draw_hdmi_screen_rgb_dynamic((uint8_t *)dstBuf, dstBufSize, ctx->processId, ROW_WINDOW_NUMBER, COL_WINDOW_NUMBER);
+        // draw_hdmi_screen_rgb_nine((uint8_t *)dstBuf, dstBufSize, ctx->processId);
+        // draw_hdmi_screen_rgb_quarter((uint8_t *)dstBuf, dstBufSize, ctx->processId);
     }
 
 release_buffer:
@@ -511,6 +519,7 @@ void mpp_decoder_frame_callback_rga(void *userdata, int width_stride, int height
     // if (ctx->processId == 0)
     // {
     draw_hdmi_screen_rgb_quarter(origin_mat.data, mid_width * mid_height * 4, ctx->processId);
+
     // draw_hdmi_screen_rgb(origin_mat.data, mid_width * mid_height * 4);
     //}
     if (ctx->processId == 0)

@@ -98,6 +98,13 @@ int main(int argc, char **argv)
     pthread_t rtspPid7;
     pthread_t rtspPid8;
     pthread_t rtspPid9;
+    pthread_t rtspPid10;
+    pthread_t rtspPid11;
+    pthread_t rtspPid12;
+    pthread_t rtspPid13;
+    pthread_t rtspPid14;
+    pthread_t rtspPid15;
+    pthread_t rtspPid16;
 
     // process_config_t thread1Config = {"rtsp://192.168.1.10:554/stream1", 0};
     // 1935
@@ -121,6 +128,14 @@ int main(int argc, char **argv)
     process_config_t thread7Config = {"rtsp://192.168.1.159:554/stream1", 6};
     process_config_t thread8Config = {"rtsp://192.168.1.159:554/stream1", 7};
     process_config_t thread9Config = {"rtsp://192.168.1.159:554/stream1", 8};
+    process_config_t thread10Config = {"rtsp://192.168.1.159:554/stream1", 9};
+    process_config_t thread11Config = {"rtsp://192.168.1.159:554/stream1", 10};
+    process_config_t thread12Config = {"rtsp://192.168.1.159:554/stream1", 11};
+    process_config_t thread13Config = {"rtsp://192.168.1.159:554/stream1", 12};
+    process_config_t thread14Config = {"rtsp://192.168.1.159:554/stream1", 13};
+    process_config_t thread15Config = {"rtsp://192.168.1.159:554/stream1", 14};
+    process_config_t thread16Config = {"rtsp://192.168.1.159:554/stream1", 15};
+
     pthread_create(&rtspPid1, NULL, rtps_process, (void *)&thread1Config);
     // usleep(1000 * 200);
     sleep(1);
@@ -140,12 +155,40 @@ int main(int argc, char **argv)
     sleep(1);
     // usleep(1000 * 200);
     pthread_create(&rtspPid7, NULL, rtps_process, (void *)&thread7Config);
-    // sleep(1);
+    sleep(1);
     // usleep(1000 * 200);
-    // pthread_create(&rtspPid8, NULL, rtps_process, (void *)&thread8Config);
-    // sleep(1);
+    pthread_create(&rtspPid8, NULL, rtps_process, (void *)&thread8Config);
+    sleep(1);
     // usleep(1000 * 200);
-    // pthread_create(&rtspPid9, NULL, rtps_process, (void *)&thread9Config);
+    pthread_create(&rtspPid9, NULL, rtps_process, (void *)&thread9Config);
+
+    sleep(1);
+    // usleep(1000 * 200);
+    pthread_create(&rtspPid10, NULL, rtps_process, (void *)&thread10Config);
+
+    sleep(1);
+    // usleep(1000 * 200);
+    pthread_create(&rtspPid11, NULL, rtps_process, (void *)&thread11Config);
+
+    sleep(1);
+    // usleep(1000 * 200);
+    pthread_create(&rtspPid12, NULL, rtps_process, (void *)&thread12Config);
+
+    sleep(1);
+    // usleep(1000 * 200);
+    pthread_create(&rtspPid13, NULL, rtps_process, (void *)&thread13Config);
+
+    sleep(1);
+    // usleep(1000 * 200);
+    pthread_create(&rtspPid14, NULL, rtps_process, (void *)&thread14Config);
+
+    sleep(1);
+    // usleep(1000 * 200);
+    pthread_create(&rtspPid15, NULL, rtps_process, (void *)&thread15Config);
+
+    sleep(1);
+    // usleep(1000 * 200);
+    pthread_create(&rtspPid16, NULL, rtps_process, (void *)&thread16Config);
 
     getchar();
     getchar();
@@ -159,6 +202,13 @@ int main(int argc, char **argv)
     pthread_join(rtspPid7, NULL);
     pthread_join(rtspPid8, NULL);
     pthread_join(rtspPid9, NULL);
+    pthread_join(rtspPid10, NULL);
+    pthread_join(rtspPid11, NULL);
+    pthread_join(rtspPid12, NULL);
+    pthread_join(rtspPid13, NULL);
+    pthread_join(rtspPid14, NULL);
+    pthread_join(rtspPid15, NULL);
+    pthread_join(rtspPid16, NULL);
 
     return 0;
 }

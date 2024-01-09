@@ -1,2 +1,47 @@
-多路RTSP MPP硬解码
+多达9-16路RTSP MPP硬解码
 RGA缩放
+同屏显示
+
+目前是16路解码, 有几路是有问题的, 反正不是正式项目, 大家看着有点启发就好.
+
+直接在板子上编译就好
+需要升级rga的lib驱动, mpp的lib
+基于恩培的yolov8_stream_pool项目修改的, 有兴趣还能直接融合推理进来.
+
+src/rtsp_single.cpp  //主程序
+src/rkmedia/utils/mpp_decoder.cpp // 解码器
+src/rkmedia/utils/mpp_encoder.cpp // 编码器 没用上
+src/screen_test.cpp  // drm显示
+src/bo.c 
+src/dev.c
+src/modeset.c   
+src/mpp_api.cpp   // RGA缩放
+
+这里最费劲的就是RGA缩放, 因为不熟.
+mpp_decoder_frame_callback这个回调, data里面返回的就是解码后的nv12类型的数据, 里面有几个坑
+1. nv12不是420sp
+2. 高度是16字节对齐的, 也就是说高度是1088, 而不是1080
+3. 分几步, 一个是缩放, 一个是转色彩格式, (如果使用opencv, 还涉及imcopy)
+4. 之前一直因为没有使用importbuffer_virtualaddr, 导致rga内存申请一直报错, 参考librga例程才算是解决了.
+
+420sp转rgba才能显示, 当然, 你要推理也是要转成RGB的, 这里使用了task方式, 如果用opencv的话, 是cpu参与, 估计会非常慢, 因为我硬件rga都花了超过40ms,
+
+编译:
+cmake --build build
+
+运行:
+./build/rtsp_single
+
+ubuntu最好使用非图形化界面
+sudo systemctl set-default multi-user.target 
+sudo rebboot
+
+查看rga的内核占用情况:
+sudo cat /sys/kernel/debug/rkrga/load 
+
+查看cpu温度
+sudo cat /sys/class/thermal/thermal_zone0/temp
+
+查看可能存在的rga报错:
+sudo tail /var/log/syslog -n 50
+

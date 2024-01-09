@@ -182,6 +182,59 @@ int hdmi_init()
     return 0;
 }
 
+void draw_hdmi_screen_rgb_dynamic(uint8_t *data, uint32_t dataSize, uint8_t screenNum, uint8_t rows, uint8_t cols)
+{
+    if (rows == 0 || cols == 0 || screenNum >= rows * cols)
+    {
+        return; // 避免除零错误和数组越界
+    }
+
+    uint32_t startRowIdx, startColIdx;
+    uint32_t screenWidth = HDMI_SCREEN_WIDTH / cols;
+    uint32_t screenHeight = HDMI_SCREEN_HEIGHT / rows;
+
+    // 计算起始行和列索引
+    startRowIdx = (screenNum / cols) * screenHeight; // 根据屏幕编号计算起始行索引
+    startColIdx = (screenNum % cols) * screenWidth;  // 根据屏幕编号计算起始列索引
+
+    uint32_t rowIdx, colIdx;
+    uint8_t *dataPtr = data;
+    for (rowIdx = startRowIdx; rowIdx < startRowIdx + screenHeight; rowIdx++)
+    {
+        uint8_t *rowPtr = (uint8_t *)hdmiCRPtr->scanout->map_addr + rowIdx * hdmiCRPtr->scanout->pitch;
+        for (colIdx = startColIdx; colIdx < startColIdx + screenWidth; colIdx++)
+        {
+            uint8_t *pixel = rowPtr + colIdx * 4;
+            memcpy(pixel, dataPtr, 4);
+            dataPtr += 4;
+        }
+    }
+}
+
+void draw_hdmi_screen_rgb_nine(uint8_t *data, uint32_t dataSize, uint8_t part)
+{
+    uint32_t startRowIdx, startColIdx;
+    uint32_t partWidth = HDMI_SCREEN_WIDTH / 3;
+    uint32_t partHeight = HDMI_SCREEN_HEIGHT / 3;
+
+    // 计算起始行和列索引
+    startRowIdx = (part / 3) * partHeight; // 根据部分的行来计算起始行索引
+    startColIdx = (part % 3) * partWidth;  // 根据部分的列来计算起始列索引
+
+    uint32_t rowIdx, colIdx;
+    uint8_t *dataPtr = data;
+    for (rowIdx = startRowIdx; rowIdx < startRowIdx + partHeight; rowIdx++)
+    {
+        uint8_t *rowPtr = (uint8_t *)hdmiCRPtr->scanout->map_addr + rowIdx * hdmiCRPtr->scanout->pitch;
+        for (colIdx = startColIdx; colIdx < startColIdx + partWidth; colIdx++)
+        {
+            uint8_t *pixel = rowPtr + colIdx * 4;
+            memcpy(pixel, dataPtr, 4);
+            dataPtr += 4;
+        }
+    }
+}
+
 void draw_hdmi_screen_rgb_quarter(uint8_t *data, uint32_t dataSize, uint8_t quarter)
 {
     uint32_t startRowIdx, startColIdx;
