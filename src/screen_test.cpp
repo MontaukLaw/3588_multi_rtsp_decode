@@ -184,7 +184,9 @@ int hdmi_init()
 
 void draw_hdmi_screen_rgb_dynamic(uint8_t *data, uint32_t dataSize, uint8_t screenNum, uint8_t rows, uint8_t cols)
 {
-    if (rows == 0 || cols == 0 || screenNum >= rows * cols)
+    uint8_t screenIdx = screenNum;
+
+    if (rows == 0 || cols == 0 || screenIdx >= rows * cols)
     {
         return; // 避免除零错误和数组越界
     }
@@ -194,8 +196,8 @@ void draw_hdmi_screen_rgb_dynamic(uint8_t *data, uint32_t dataSize, uint8_t scre
     uint32_t screenHeight = HDMI_SCREEN_HEIGHT / rows;
 
     // 计算起始行和列索引
-    startRowIdx = (screenNum / cols) * screenHeight; // 根据屏幕编号计算起始行索引
-    startColIdx = (screenNum % cols) * screenWidth;  // 根据屏幕编号计算起始列索引
+    startRowIdx = (screenIdx / cols) * screenHeight; // 根据屏幕编号计算起始行索引
+    startColIdx = (screenIdx % cols) * screenWidth;  // 根据屏幕编号计算起始列索引
 
     uint32_t rowIdx, colIdx;
     uint8_t *dataPtr = data;

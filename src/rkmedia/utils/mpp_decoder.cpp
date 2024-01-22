@@ -65,9 +65,9 @@ int MppDecoder::Init(int video_type, int fps, void *userdata)
         LOGD("unsupport video_type %d", video_type);
         return -1;
     }
-    LOGD("mpi_dec_test start ");
+    LOGD("mpi_dec_test start \n");
     memset(&loop_data, 0, sizeof(loop_data));
-    LOGD("mpi_dec_test decoder test start mpp_type %d ", mpp_type);
+    LOGD("mpi_dec_test decoder test start mpp_type %d \n", mpp_type);
 
     MppDecCfg cfg = NULL;
 

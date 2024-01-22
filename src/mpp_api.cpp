@@ -22,6 +22,10 @@
 #include "task/yolov8_thread_pool.h"
 #include "mpp_api.h"
 #include "screen_test.h"
+#include <iostream>
+#include <iomanip>
+#include <chrono>
+#include <ctime>
 
 #define LOG_TAG "MPP_API"
 
@@ -30,6 +34,27 @@ extern bool playing;
 #define SCREEN_HEIGHT 1080
 #define COL_WINDOW_NUMBER 4
 #define ROW_WINDOW_NUMBER 4
+
+void print_time_stamp()
+{
+    // 获取当前时间点
+    auto now = std::chrono::system_clock::now();
+
+    // 将时间点转换为time_t以便转换为本地时间
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+
+    // 转换为本地时间
+    std::tm now_tm = *std::localtime(&now_c);
+
+    // 打印年月日时分秒
+    std::cout << std::put_time(&now_tm, "%Y-%m-%d %H:%M:%S");
+
+    // 获取自纪元以来的毫秒数
+    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
+
+    // 毫秒数是总毫秒数减去完整秒数后的剩余部分
+    std::cout << '.' << std::setfill('0') << std::setw(3) << milliseconds.count() % 1000 << " ";
+}
 
 void get_window_info(int processId, int *start_x, int *start_y, int *window_width, int *window_height)
 {
@@ -72,11 +97,29 @@ int rga_resize(int src_width, int src_height, int src_format, char *src_buf,
     imresize(src, dst);
     return 0;
 }
+static int counter = 0;
+void mpp_decoder_frame_callback(void *userdata, int width_stride, int height_stride, int width, int height, int format, int fd, void *data)
+{
+    struct timeval now;
+    static struct timeval lastCallback;
+    gettimeofday(&now, NULL);
+    long timeBetween = now.tv_sec * 1000 + now.tv_usec / 1000 - lastCallback.tv_usec / 1000 - lastCallback.tv_sec * 1000;
+    // printf("Time between:%ld ms \n", timeBetween);
+    if (timeBetween > 45)
+    {
+        // printf("Time between:%ld ms \n", timeBetween);
+    }
 
+    printf("Time between:%ld ms \n", timeBetween);
+
+    gettimeofday(&lastCallback, NULL);
+
+    usleep(500 * 1000);
+}
 // 解码后的数据回调函数 没有推理的解码
 // 异步方式
 // width_stride:1920 height_stride:1088 width:1920 height:1080 format:0 fd:41
-void mpp_decoder_frame_callback(void *userdata, int width_stride, int height_stride, int width, int height, int format, int fd, void *data)
+void mpp_decoder_frame_callback_1080_works(void *userdata, int width_stride, int height_stride, int width, int height, int format, int fd, void *data)
 {
     rknn_app_context_t *ctx = (rknn_app_context_t *)userdata;
     // printf("pid:%d data %p\n", ctx->processId, data);
@@ -641,6 +684,12 @@ void API_CALL on_track_frame_out(void *user_data, mk_frame frame)
     size_t size = mk_frame_get_data_size(frame);
     // printf("size:%zu\n", size);
     // printf("decoder=%p\n", ctx->decoder);
+    if (MK_FRAME_FLAG_IS_KEY == mk_frame_get_flags(frame))
+    {
+        // 打印当前时间戳
+        // print_time_stamp();
+        // printf("key frame");
+    }
     // 解码
     ctx->decoder->decode((uint8_t *)data, size, 0);
     // mk_media_input_frame(ctx->media, frame);

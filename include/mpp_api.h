@@ -14,7 +14,7 @@ typedef struct
     uint64_t pts;
     uint64_t dts;
     int processId;
-    char *stream_url;
+    char stream_url[256];
 } rknn_app_context_t;
 
 void mpp_decoder_frame_callback(void *userdata, int width_stride, int height_stride, int width, int height, int format, int fd, void *data);
